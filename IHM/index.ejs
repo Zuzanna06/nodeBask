@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <%- include('./component/header') %>
+    <section>
+      <form action="/liste" method="post">
+        <input type="hidden" name="id" id="id">
+        <label for="title">Titre</label>
+        <input type="text" id="title" name="title" /><br />
+        <label for="description">Description de la tâche</label><br />
+        <textarea
+          name="description"
+          id="description"
+          cols="30"
+          rows="10"></textarea>
+        <br />
+        <input type="submit" value="Enregistrer" />
+      </form>
+      <p>
+        ----------------------------------------------------------------------------
+      </p>
+    </section>
+    <section>
+      <h2>Liste des tâches :</h2>
+      <ul>
+
+        <% for (let index = 0; index < data.length; index++) { %>
+        <li><%= data[index].title + ': ' + data[index].description %></li>
+        <input type="button" value="Suprimer" onclick="showPopup('<%= data[index].id %>')">
+        <input type="button" value="Modifier" 
+        onclick="putData('<%= data[index].id %>','<%= data[index].title %>','<%= data[index].description %>')">
+
+<!-- deleteData('<%= data[index].id %>') -->
+        <!-- deleteData('<%= data[index].id %>') -->
+
+                            <!--  -->
+        <% } %>
+
+      </ul>
+    </section>
+  </body>
+  <script>
+    function putData(id, title, description) {
+    document.getElementById("id").value = id;
+    document.getElementById("title").value = title;
+    document.getElementById("description").value = description;
+}
+    function deleteData(id) {
+    let endPoint = "liste/" + id;
+        fetch(endPoint, {method : "DELETE"})
+        .then(response => response.json())
+        .then(data => window.location.href = data.routeRacine)
+        .catch(error => concole.error(error));
+    }
+    function showPopup(id) {
+        let dialog = document.createElement("dialog");
+        document.body.appendChild(dialog)
+        let textG = document.createElement("h2")
+        let yes = document.createElement("button")
+        let no = document.createElement("button")
+        textG.innerText = "Etes vous sur de vouloir supprimer ?";
+        yes.innerText = "OUI";
+        no.innerText = "NON";
+        dialog.appendChild(textG);
+        dialog.appendChild(yes);
+        dialog.appendChild(no);
+        yes.addEventListener("click", e => deleteData(id))
+        dialog.showModal(); //affiche toit a ecrant
+        dialog.addEventListener('click', e => dialog.close())
+    }
+  </script>
+</html>
